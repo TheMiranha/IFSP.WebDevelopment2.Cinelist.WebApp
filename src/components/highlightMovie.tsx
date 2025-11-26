@@ -1,5 +1,5 @@
 import { Play, Plus } from "lucide-react";
-import { Button } from "./button";
+import { Button } from "./Button";
 
 export function HighLightMovie() {
   return (
