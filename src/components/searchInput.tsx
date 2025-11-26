@@ -3,7 +3,6 @@ import { Search } from "lucide-react";
 export function SearchInput(props) {
   return (
     <div className="relative w-full max-w-sm">
-      {/* Ícone posicionado absolutamente à esquerda */}
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
         <Search className="h-4 w-4" />
       </div>

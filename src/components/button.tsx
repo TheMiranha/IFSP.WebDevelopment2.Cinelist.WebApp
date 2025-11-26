@@ -6,11 +6,9 @@ export function Button({
   className = "",
   ...props
 }) {
-  // Base styles applied to all buttons
   const baseStyles =
     "px-4 py-2 rounded-md font-medium transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900";
 
-  // Variants mapping
   const variants = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500",
     secondary:

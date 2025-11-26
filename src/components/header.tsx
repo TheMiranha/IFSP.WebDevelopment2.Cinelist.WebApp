@@ -17,7 +17,7 @@ function Header() {
       <div className="flex items-center gap-3 pr-2">
         <Button>Login</Button>
 
-        <Button>SignIn</Button>
+        <Button variant="secondary">SignIn</Button>
       </div>
     </div>
   );
