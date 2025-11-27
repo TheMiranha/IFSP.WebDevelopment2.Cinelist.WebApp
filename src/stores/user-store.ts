@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { me } from '../api/cinelist';
+import { me, type Movie } from '../api/cinelist';
 
 type User = {
   id: string;
@@ -12,6 +12,7 @@ type User = {
 
 type UserStore = {
   user: User | null;
+  favorites: Movie[];
   loading: boolean;
   error: string | null;
   fetchUser: () => Promise<void>;
@@ -21,24 +22,34 @@ type UserStore = {
 
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
+  favorites: [],
   loading: false,
   error: null,
   
   fetchUser: async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      set({ user: null, loading: false });
+      set({ user: null, favorites: [], loading: false });
       return;
     }
 
     set({ loading: true, error: null });
     try {
-      const userData = await me();
-      set({ user: userData, loading: false, error: null });
+      const response = await me();
+      if (response.success && response.data) {
+        set({ 
+          user: response.data.user, 
+          favorites: response.data.favorites || [],
+          loading: false, 
+          error: null 
+        });
+      } else {
+        set({ user: null, favorites: [], loading: false, error: "Erro ao buscar dados do usuário" });
+      }
     } catch (error: any) {
       // Se der erro (token inválido, etc), limpa o token e o usuário
       localStorage.removeItem('token');
-      set({ user: null, loading: false, error: error.message });
+      set({ user: null, favorites: [], loading: false, error: error.message });
     }
   },
   
@@ -46,7 +57,7 @@ export const useUserStore = create<UserStore>((set) => ({
   
   logout: () => {
     localStorage.removeItem('token');
-    set({ user: null, error: null });
+    set({ user: null, favorites: [], error: null });
   },
 }));
 

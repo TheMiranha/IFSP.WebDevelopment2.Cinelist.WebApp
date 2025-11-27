@@ -1,142 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/header";
 import { MovieCard } from "../../components/movie-card";
 import { ScrollArea } from "../../components/scroll-area";
 import { UserReviewItem } from "../../components/user-review-item";
 import { useUserStore } from "../../stores/user-store";
+import { me, type Movie, type Rating } from "../../api/cinelist";
 import { User } from "lucide-react";
 
 function UserScreen() {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("favorites");
   const currentUser = useUserStore((state) => state.user);
+  const [favorites, setFavorites] = useState<Movie[]>([]);
+  const [toWatch, setToWatch] = useState<Movie[]>([]);
+  const [watched, setWatched] = useState<Rating[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Usa os dados do usuário logado se o ID corresponder
   const user = currentUser && currentUser.id === id ? currentUser : null;
 
-  const watchedMovies = [
-    {
-      id: 1,
-      title: "Avatar: The Way of Water",
-      year: "2022",
-      cover: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
-    },
-    {
-      id: 2,
-      title: "Top Gun: Maverick",
-      year: "2022",
-      cover: "https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DXDAoLu.jpg",
-    },
-    {
-      id: 3,
-      title: "The Batman",
-      year: "2022",
-      cover: "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",
-    },
-    {
-      id: 4,
-      title: "Everything Everywhere All At Once",
-      year: "2022",
-      cover: "https://image.tmdb.org/t/p/w500/rKvCys0f9XNSn0rGf8c14Rk8A0.jpg",
-    },
-  ];
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user && user.id === id) {
+        setLoading(true);
+        try {
+          const response = await me();
+          if (response.success && response.data) {
+            setFavorites(response.data.favorites || []);
+            setToWatch(response.data.toWatch || []);
+            setWatched(response.data.watched || []);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar dados do usuário:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-  const watchlistMovies = [
-    {
-      id: 5,
-      title: "Dune: Part Two",
-      year: "2024",
-      cover: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-    },
-    {
-      id: 6,
-      title: "Oppenheimer",
-      year: "2023",
-      cover: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-    },
-    {
-      id: 7,
-      title: "Spider-Man: Across the Spider-Verse",
-      year: "2023",
-      cover: "https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
-    },
-  ];
+    fetchUserData();
+  }, [user, id]);
 
-  const favoriteMovies = [
-    {
-      id: 8,
-      title: "Interstellar",
-      year: "2014",
-      cover: "https://image.tmdb.org/t/p/w500/gEU2QniL6E77NI6lCU6MxlNBvIx.jpg",
-    },
-    {
-      id: 9,
-      title: "The Dark Knight",
-      year: "2008",
-      cover: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-    },
-    {
-      id: 10,
-      title: "Pulp Fiction",
-      year: "1994",
-      cover: "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
-    },
-    {
-      id: 11,
-      title: "Inception",
-      year: "2010",
-      cover: "https://image.tmdb.org/t/p/w500/ljsZTbVsrQSqZgWeep2B1QiDKuy.jpg",
-    },
-    {
-      id: 12,
-      title: "Parasite",
-      year: "2019",
-      cover: "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    },
-    {
-      id: 13,
-      title: "The Matrix",
-      year: "1999",
-      cover: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
-    },
-    {
-      id: 14,
-      title: "Fight Club",
-      year: "1999",
-      cover: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7Qf4n6a87u0F.jpg",
-    },
-    {
-      id: 15,
-      title: "Goodfellas",
-      year: "1990",
-      cover: "https://image.tmdb.org/t/p/w500/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg",
-    },
-    {
-      id: 16,
-      title: "The Shawshank Redemption",
-      year: "1994",
-      cover: "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-    },
-    {
-      id: 17,
-      title: "Forrest Gump",
-      year: "1994",
-      cover: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
-    },
-    {
-      id: 18,
-      title: "Spirited Away",
-      year: "2001",
-      cover: "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
-    },
-    {
-      id: 19,
-      title: "Gladiator",
-      year: "2000",
-      cover: "https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg",
-    },
-  ];
 
   const userReviews = [
     {
@@ -161,47 +66,61 @@ function UserScreen() {
 
   const renderContent = () => {
     if (activeTab === "reviews") {
+      // Para reviews, precisamos extrair os dados dos ratings watched
+      const reviews = watched.map((rating, index) => ({
+        id: index,
+        movieTitle: rating.movie?.title || "Filme",
+        movieCover: rating.movie?.imageUrl || null,
+        rating: rating.rate,
+        text: rating.description,
+        date: rating.createdAt,
+      }));
+
       return (
         <div className="space-y-4 max-w-4xl mx-auto">
-          {userReviews.map((review) => (
-            <UserReviewItem key={review.id} review={review} />
-          ))}
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <UserReviewItem key={review.id} review={review} />
+            ))
+          ) : (
+            <p className="text-zinc-500 text-sm mt-4 text-center">
+              Nenhuma resenha encontrada.
+            </p>
+          )}
         </div>
       );
     }
 
-    type Movie = {
-      id: number;
-      title: string;
-      year: string;
-      cover: string;
-    };
-
     let currentMovies: Movie[] = [];
     switch (activeTab) {
       case "watched":
-        currentMovies = watchedMovies;
+        // Extrai os filmes dos ratings watched (se o rating tiver informações do filme)
+        currentMovies = watched
+          .map((rating) => rating.movie)
+          .filter((movie): movie is Movie => movie !== undefined);
         break;
       case "watchlist":
-        currentMovies = watchlistMovies;
+        currentMovies = toWatch;
         break;
       case "favorites":
-        currentMovies = favoriteMovies;
+        currentMovies = favorites;
         break;
       default:
         currentMovies = [];
     }
 
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <p className="text-zinc-400">Carregando...</p>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-wrap gap-6 justify-center">
         {currentMovies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            id={movie.id}
-            title={movie.title}
-            year={movie.year}
-            cover={movie.cover}
-          />
+          <MovieCard key={movie.id} movie={movie} />
         ))}
         {currentMovies.length === 0 && (
           <p className="text-zinc-500 text-sm mt-4">

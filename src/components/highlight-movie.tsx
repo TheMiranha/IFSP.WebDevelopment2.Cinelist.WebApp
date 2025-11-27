@@ -1,4 +1,5 @@
-import { Play, Plus, Loader2 } from "lucide-react"; // Importe o Loader se quiser, ou use div simples
+import { useNavigate } from "react-router-dom";
+import { Play, Loader2 } from "lucide-react";
 import { Button } from "./button";
 import type { Movie } from "../api/cinelist";
 
@@ -7,6 +8,8 @@ interface HighLightMovieProps {
 }
 
 export function HighLightMovie({ movie }: HighLightMovieProps) {
+  const navigate = useNavigate();
+
   if (!movie) {
     return (
       <div className="relative w-full h-[32rem] bg-zinc-900 animate-pulse flex items-center justify-center">
@@ -14,6 +17,10 @@ export function HighLightMovie({ movie }: HighLightMovieProps) {
       </div>
     );
   }
+
+  const handleClick = () => {
+    navigate(`/movie/${movie.id}`);
+  };
 
   return (
     <div className="relative w-full h-[32rem] overflow-hidden">
@@ -39,23 +46,14 @@ export function HighLightMovie({ movie }: HighLightMovieProps) {
           {movie.description}
         </p>
 
-        <div className="flex gap-4">
-          <Button
-            variant="primary"
-            className="flex items-center gap-2 px-6 py-3"
-          >
-            <Play className="w-4 h-4 fill-current" />
-            Assistir Trailer
-          </Button>
-
-          <Button
-            variant="secondary"
-            className="flex items-center gap-2 px-6 py-3"
-          >
-            <Plus className="w-4 h-4" />
-            Adicionar à Lista
-          </Button>
-        </div>
+        <Button
+          variant="primary"
+          className="flex items-center gap-2 px-6 py-3"
+          onClick={handleClick}
+        >
+          <Play className="w-4 h-4 fill-current" />
+          Ver Detalhes
+        </Button>
       </div>
     </div>
   );

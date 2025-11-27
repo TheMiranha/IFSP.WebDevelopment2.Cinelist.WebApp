@@ -1,23 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Star,
   Clock,
   Calendar,
   Heart,
-  Eye,
   ListPlus,
   Clapperboard,
   ChevronLeft,
 } from "lucide-react";
-import { Button } from "./Button";
+import { Button } from "./button";
+import { addFavorite } from "../api/cinelist";
+import { useUserStore } from "../stores/user-store";
+import type { Movie } from "../api/cinelist";
 
-export function MoviePanel({ movie }) {
+interface MoviePanelProps {
+  movie: Movie;
+  onFavoriteChange?: () => void;
+}
+
+export function MoviePanel({ movie, onFavoriteChange }: MoviePanelProps) {
   const [imageError, setImageError] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const favorites = useUserStore((state) => state.favorites);
+  const fetchUser = useUserStore((state) => state.fetchUser);
+  const user = useUserStore((state) => state.user);
+  
+  // Verifica se o filme está nos favoritos (comparação de strings)
+  const isFavorite = favorites.some((fav) => String(fav.id) === String(movie.id));
+
+  // Garante que os favoritos sejam carregados quando o componente montar
+  useEffect(() => {
+    if (user && favorites.length === 0) {
+      fetchUser();
+    }
+  }, [user, favorites.length, fetchUser]);
 
   const navigate = useNavigate();
 
   const genres = ["Ficção Científica", "Aventura", "Drama"];
+  const year = movie.releasedAt ? new Date(movie.releasedAt).getFullYear() : "----";
+
+  const handleFavorite = async () => {
+    setFavoriteLoading(true);
+    try {
+      await addFavorite({ movieId: movie.id });
+      // Recarrega os dados do usuário para atualizar a lista de favoritos
+      await fetchUser();
+      // Chama callback se fornecido
+      if (onFavoriteChange) {
+        onFavoriteChange();
+      }
+    } catch (error) {
+      console.error("Erro ao favoritar filme:", error);
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
 
   return (
     <div className="relative w-full">
@@ -28,9 +66,9 @@ export function MoviePanel({ movie }) {
       </div>
 
       <div className="absolute inset-0 h-[500px] overflow-hidden">
-        {!imageError && movie.cover ? (
+        {!imageError && movie.imageUrl ? (
           <img
-            src={movie.cover}
+            src={movie.imageUrl}
             alt="Background"
             className="w-full h-full object-cover opacity-30 blur-xl scale-110"
             onError={() => setImageError(true)}
@@ -43,9 +81,9 @@ export function MoviePanel({ movie }) {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-8 pb-12 flex flex-col md:flex-row gap-8">
         <div className="flex-shrink-0">
-          {!imageError && movie.cover ? (
+          {!imageError && movie.imageUrl ? (
             <img
-              src={movie.cover}
+              src={movie.imageUrl}
               alt={`Poster ${movie.title}`}
               className="w-64 h-96 object-cover rounded-xl shadow-2xl shadow-black/50 border border-zinc-800"
               onError={() => setImageError(true)}
@@ -65,7 +103,7 @@ export function MoviePanel({ movie }) {
 
           <div className="flex items-center gap-4 text-zinc-400 text-sm mb-4">
             <span className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" /> {movie.year}
+              <Calendar className="w-4 h-4" /> {year}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" /> 155 min
@@ -86,22 +124,19 @@ export function MoviePanel({ movie }) {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2 text-white">Sinopse</h3>
             <p className="text-zinc-300 leading-relaxed max-w-3xl">
-              Em um futuro distante, Paul Atreides, um jovem brilhante e
-              talentoso nascido com um grande destino para além de sua
-              compreensão, deve viajar para o planeta mais perigoso do universo
-              para garantir o futuro de sua família e de seu povo.
+              {movie.description || "Sem descrição disponível."}
             </p>
           </div>
 
           <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-full border-4 border-yellow-500 flex items-center justify-center bg-black/50 font-bold text-xl text-yellow-500">
-                8.2
+                {movie.tmdbRate ? movie.tmdbRate.toFixed(1) : "N/A"}
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-bold">Média da Comunidade</span>
                 <span className="text-xs text-zinc-500">
-                  Baseado em 12.345 votos
+                  {movie.tmdbRate ? "Avaliação TMDB" : "Sem avaliação"}
                 </span>
               </div>
             </div>
@@ -114,29 +149,17 @@ export function MoviePanel({ movie }) {
                 <ListPlus className="w-5 h-5" />
               </Button>
               <Button
-                variant="secondary"
-                className="rounded-full w-12 h-12 p-0 flex items-center justify-center border-zinc-600"
+                variant={isFavorite ? "primary" : "secondary"}
+                className={`rounded-full w-12 h-12 p-0 flex items-center justify-center ${
+                  isFavorite ? "" : "border-zinc-600"
+                }`}
+                onClick={handleFavorite}
+                disabled={favoriteLoading}
               >
-                <Eye className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="secondary"
-                className="rounded-full w-12 h-12 p-0 flex items-center justify-center border-zinc-600"
-              >
-                <Heart className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <span className="text-sm font-bold block mb-2">Sua Avaliação</span>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className="w-6 h-6 text-zinc-600 hover:text-yellow-500 cursor-pointer transition-colors"
+                <Heart 
+                  className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} 
                 />
-              ))}
+              </Button>
             </div>
           </div>
         </div>

@@ -13,15 +13,17 @@ export function MovieCard({ movie }: MovieCardProps) {
 
   useEffect(() => {
     setImageError(false);
-  }, [movie.imageUrl]);
+  }, [movie?.imageUrl]);
 
   const handleDetails = () => {
-    navigate("/movie", {
-      state: {
-        movie: movie,
-      },
-    });
+    if (movie?.id) {
+      navigate(`/movie/${movie.id}`);
+    }
   };
+
+  if (!movie) {
+    return null;
+  }
 
   const hasValidImage = movie.imageUrl && movie.imageUrl.trim() !== "";
 

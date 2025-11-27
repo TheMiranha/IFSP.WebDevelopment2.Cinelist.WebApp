@@ -46,13 +46,21 @@ export async function register(
   return response.data;
 }
 
-type MeResponse = {
-  id: string;
-  name: string;
-  email: string;
-  image_url: string;
-  created_at: string;
-  updated_at: string;
+export type MeResponse = {
+  success: boolean;
+  data: {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      image_url: string;
+      created_at: string;
+      updated_at: string;
+    };
+    favorites: Movie[];
+    toWatch: Movie[];
+    watched: Rating[];
+  }
 };
 export async function me(): Promise<MeResponse> {
   const response = await api.get<MeResponse>("/user/me");
@@ -68,6 +76,19 @@ export type Movie = {
   updatedAt: Date;
   createdAt: Date;
   tmdbRate: number | null;
+};
+
+export type Rating = {
+  rate: number;
+  description: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  user: {
+    id: string;
+    name: string;
+    imageUrl?: string;
+  };
+  movie?: Movie;
 };
 
 type Actor = {
@@ -103,5 +124,44 @@ export async function searchMovie(query: string): Promise<SearchMovieResponse> {
   const response = await api.get<SearchMovieResponse>("/movies/search", {
     params: { term: query },
   });
+  return response.data;
+}
+
+export type GetMovieResponse = {
+  success: boolean;
+  data: {
+    movie: Movie;
+    cast: Cast[];
+    ratings: Rating[];
+  }
+}
+export async function getMovie(id: string): Promise<GetMovieResponse> {
+  const response = await api.get<GetMovieResponse>("/movies/by-id/" + id);
+  return response.data;
+}
+
+export type CreateRatingProps = {
+  movieId: string;
+  rate: number;
+  description: string;
+};
+
+type CreateRatingResponse = {
+  success: boolean;
+  message?: string;
+};
+
+export async function createRating(
+  props: CreateRatingProps,
+): Promise<CreateRatingResponse> {
+  const response = await api.post<CreateRatingResponse>("/movies/watched", props);
+  return response.data;
+}
+
+type AddFavoriteProps = {
+  movieId: string
+};
+export async function addFavorite(props: AddFavoriteProps): Promise<void> {
+  const response = await api.post<void>("/movies/favorite", props);
   return response.data;
 }

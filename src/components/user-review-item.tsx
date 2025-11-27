@@ -4,11 +4,19 @@ export function UserReviewItem({ review }) {
   return (
     <div className="bg-zinc-900 rounded-xl p-6 border border-zinc-800 flex gap-4 hover:border-zinc-700 transition-colors">
       <div className="flex-shrink-0 w-16 h-24">
-        <img
-          src={review.movieCover}
-          alt={review.movieTitle}
-          className="w-full h-full object-cover rounded-md border border-zinc-700"
-        />
+        {review.movieCover ? (
+          <img
+            src={review.movieCover}
+            alt={review.movieTitle}
+            className="w-full h-full object-cover rounded-md border border-zinc-700"
+          />
+        ) : (
+          <div className="w-full h-full bg-zinc-800 rounded-md border border-zinc-700 flex items-center justify-center">
+            <span className="text-zinc-500 text-xs text-center px-1">
+              {review.movieTitle}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="flex-1">
