@@ -1,16 +1,19 @@
 import { useState } from "react";
-import Header from "../components/Header";
-import { ScrollArea } from "../components/ScrollArea";
-import { MovieCard } from "../components/MovieCard";
-import { UserReviewItem } from "../components/UserReviewItem";
+import { useParams } from "react-router-dom";
+import Header from "../../components/header";
+import { MovieCard } from "../../components/movie-card";
+import { ScrollArea } from "../../components/scroll-area";
+import { UserReviewItem } from "../../components/user-review-item";
+import { useUserStore } from "../../stores/user-store";
+import { User } from "lucide-react";
 
 function UserScreen() {
+  const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("favorites");
+  const currentUser = useUserStore((state) => state.user);
 
-  const user = {
-    name: "Bruno Costa",
-    avatar: "https://github.com/shadcn.png",
-  };
+  // Usa os dados do usuário logado se o ID corresponder
+  const user = currentUser && currentUser.id === id ? currentUser : null;
 
   const watchedMovies = [
     {
@@ -167,7 +170,14 @@ function UserScreen() {
       );
     }
 
-    let currentMovies = [];
+    type Movie = {
+      id: number;
+      title: string;
+      year: string;
+      cover: string;
+    };
+
+    let currentMovies: Movie[] = [];
     switch (activeTab) {
       case "watched":
         currentMovies = watchedMovies;
@@ -187,6 +197,7 @@ function UserScreen() {
         {currentMovies.map((movie) => (
           <MovieCard
             key={movie.id}
+            id={movie.id}
             title={movie.title}
             year={movie.year}
             cover={movie.cover}
@@ -209,15 +220,21 @@ function UserScreen() {
         <ScrollArea>
           <div className="max-w-7xl mx-auto px-6 py-10">
             <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12">
-              <div className="w-24 h-24 rounded-full bg-zinc-800 border-2 border-zinc-700 p-1">
-                <img
-                  src={user.avatar}
-                  alt="User"
-                  className="w-full h-full rounded-full object-cover"
-                />
+              <div className="w-24 h-24 rounded-full bg-zinc-800 border-2 border-zinc-700 p-1 flex items-center justify-center">
+                {user?.image_url ? (
+                  <img
+                    src={user.image_url}
+                    alt={user.name}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="w-12 h-12 text-zinc-400" />
+                )}
               </div>
               <div className="flex items-center gap-4">
-                <h1 className="text-3xl font-bold text-white">{user.name}</h1>
+                <h1 className="text-3xl font-bold text-white">
+                  {user?.name || "Usuário"}
+                </h1>
               </div>
             </div>
 

@@ -1,17 +1,16 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomeScreen from "./screens/HomeScreen";
-import MovieScreen from "./screens/MovieScreen";
-import UserScreen from "./screens/UserScreen";
+import { useEffect } from "react";
+import { AppRouter } from "./router";
+import { useUserStore } from "./stores/user-store";
 
 function App() {
+  const fetchUser = useUserStore((state) => state.fetchUser);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<HomeScreen />} path="/" />
-        <Route element={<MovieScreen />} path="/movie" />
-        <Route element={<UserScreen />} path="/user" />
-      </Routes>
-    </BrowserRouter>
+    <AppRouter/>
   );
 }
 

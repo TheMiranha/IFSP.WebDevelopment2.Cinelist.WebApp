@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import { ScrollArea } from "../components/ScrollArea";
+import Header from "../../components/header";
 import { ChevronLeft } from "lucide-react";
-import { Button } from "../components/Button";
-import { MoviePanel } from "../components/MoviePanel";
-import { MovieReviewSection } from "../components/MovieReviewSection";
+import { Button } from "../../components/button";
+import { MoviePanel } from "../../components/movie-panel";
+import { MovieReviewSection } from "../../components/movie-review-section";
+import { ScrollArea } from "../../components/scroll-area";
 
 function MovieScreen() {
   const location = useLocation();

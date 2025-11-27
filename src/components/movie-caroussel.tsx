@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { MovieCard } from "./MovieCard";
+import { MovieCard } from "./movie-card";
 import { Button } from "./Button";
 
 export function MovieCarousel({ title, movies }) {

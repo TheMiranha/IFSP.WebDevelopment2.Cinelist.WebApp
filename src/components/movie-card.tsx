@@ -1,11 +1,23 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clapperboard } from "lucide-react";
 
-export function MovieCard({ id, title, year, cover }) {
+type MovieCardProps = {
+  id: string | number;
+  title: string;
+  year: string;
+  cover: string | null;
+};
+
+export function MovieCard({ id, title, year, cover }: MovieCardProps) {
   const navigate = useNavigate();
 
   const [imageError, setImageError] = useState(false);
+
+  // Reset imageError quando cover mudar
+  useEffect(() => {
+    setImageError(false);
+  }, [cover]);
 
   const handleDetails = () => {
     navigate("/movie", {
@@ -15,18 +27,22 @@ export function MovieCard({ id, title, year, cover }) {
     });
   };
 
+  // Verifica se há uma URL válida de imagem
+  const hasValidImage = cover && cover.trim() !== "";
+
   return (
     <div
       onClick={handleDetails}
       className="w-[160px] flex-shrink-0 cursor-pointer group transition-all duration-300 hover:scale-105 hover:z-10 origin-center relative"
     >
       <div className="rounded-lg mb-3 transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-black/50">
-        {!imageError && cover ? (
+        {hasValidImage && !imageError ? (
           <img
             src={cover}
             alt={`Capa do filme ${title}`}
             className="w-full h-[240px] object-cover rounded-lg bg-zinc-800"
             onError={() => setImageError(true)}
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-[240px] bg-zinc-800 rounded-lg flex flex-col items-center justify-center gap-2 text-zinc-500 border border-zinc-700/50 p-2">

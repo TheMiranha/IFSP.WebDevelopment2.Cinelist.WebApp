@@ -1,7 +1,7 @@
-import Header from "../components/Header";
-import { HighLightMovie } from "../components/HighlightMovie";
-import { MovieCarousel } from "../components/MovieCaroussel";
-import { ScrollArea } from "../components/ScrollArea";
+import Header from "../../components/header";
+import { HighLightMovie } from "../../components/highlight-movie";
+import { MovieCarousel } from "../../components/movie-caroussel";
+import { ScrollArea } from "../../components/scroll-area";
 
 function HomeScreen() {
   const popularMovies = [
