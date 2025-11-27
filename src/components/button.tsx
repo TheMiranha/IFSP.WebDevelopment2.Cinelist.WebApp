@@ -9,8 +9,8 @@ export function Button({
   const isCircular = variant === "circular";
 
   const baseShape = isCircular
-    ? "p-2 rounded-full flex items-center justify-center"
-    : "px-4 py-2 rounded-md";
+    ? "p-2 rounded-full flex items-center justify-center cursor-pointer"
+    : "px-4 py-2 rounded-md cursor-pointer";
 
   const baseStyles = `${baseShape} font-medium transition-all duration-200 text-sm disabled:opacity-50`;
 

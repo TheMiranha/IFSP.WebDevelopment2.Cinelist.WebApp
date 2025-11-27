@@ -1,6 +1,7 @@
 import Header from "../components/Header";
 import { HighLightMovie } from "../components/HighlightMovie";
 import { MovieCarousel } from "../components/MovieCaroussel";
+import { ScrollArea } from "../components/ScrollArea";
 
 function HomeScreen() {
   const popularMovies = [
@@ -188,13 +189,15 @@ function HomeScreen() {
       <Header />
 
       <main className="pt-16">
-        <HighLightMovie />
+        <ScrollArea>
+          <HighLightMovie />
 
-        <div className="max-w-7xl mx-auto space-y-8 mt-8 overflow-hidden pb-10">
-          <MovieCarousel title="Populares" movies={popularMovies} />
+          <div className="max-w-7xl mx-auto space-y-8 mt-8 overflow-hidden pb-10">
+            <MovieCarousel title="Populares" movies={popularMovies} />
 
-          <MovieCarousel title="Clássicos" movies={classicMovies} />
-        </div>
+            <MovieCarousel title="Clássicos" movies={classicMovies} />
+          </div>
+        </ScrollArea>
       </main>
     </div>
   );

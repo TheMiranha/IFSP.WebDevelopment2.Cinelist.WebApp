@@ -1,11 +1,25 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Clapperboard } from "lucide-react";
 
-export function MovieCard({ title, year, cover }) {
+export function MovieCard({ id, title, year, cover }) {
+  const navigate = useNavigate();
+
   const [imageError, setImageError] = useState(false);
 
+  const handleDetails = () => {
+    navigate("/movie", {
+      state: {
+        movie: { id, title, year, cover },
+      },
+    });
+  };
+
   return (
-    <div className="w-[160px] flex-shrink-0 cursor-pointer group transition-all duration-300 hover:scale-105 hover:z-10 origin-center relative">
+    <div
+      onClick={handleDetails}
+      className="w-[160px] flex-shrink-0 cursor-pointer group transition-all duration-300 hover:scale-105 hover:z-10 origin-center relative"
+    >
       <div className="rounded-lg mb-3 transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-black/50">
         {!imageError && cover ? (
           <img
