@@ -1,12 +1,18 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { MovieCard } from "./movie-card";
-import { Button } from "./Button";
+import { Button } from "./button";
+import type { Movie } from "../api/cinelist";
 
-export function MovieCarousel({ title, movies }) {
+interface MovieCarouselProps {
+  category: string;
+  movies: Movie[];
+}
+
+export function MovieCarousel({ category, movies }: MovieCarouselProps) {
   const carouselRef = useRef(null);
 
-  const handleScroll = (direction) => {
+  const handleScroll = (direction: "left" | "right") => {
     if (carouselRef.current) {
       const { current } = carouselRef;
       const scrollAmount =
@@ -24,7 +30,7 @@ export function MovieCarousel({ title, movies }) {
   return (
     <section className="py-4 px-6 md:px-0 my-4">
       <h2 className="text-2xl font-bold text-white pl-1 ml-6 md:ml-0">
-        {title}
+        {category}
       </h2>
 
       <div className="relative group">
@@ -43,12 +49,7 @@ export function MovieCarousel({ title, movies }) {
           className="flex gap-4 overflow-x-auto py-8 px-2 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden items-center"
         >
           {movies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              title={movie.title}
-              year={movie.year}
-              cover={movie.cover}
-            />
+            <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
 

@@ -3,13 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import Header from "../../components/header";
 import { MovieCard } from "../../components/movie-card";
 import { ScrollArea } from "../../components/scroll-area";
-import { searchMovie } from "../../api/cinelist";
+import { searchMovie, type Movie } from "../../api/cinelist";
 import { Loader2 } from "lucide-react";
 
 function SearchPage() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
-  const [movies, setMovies] = useState<any[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,14 +25,7 @@ function SearchPage() {
       try {
         const response = await searchMovie(query);
         if (response.success && response.data) {
-          // Mapear os dados da API para o formato esperado pelo MovieCard
-          const mappedMovies = response.data.map((movie) => ({
-            id: movie.id,
-            title: movie.title,
-            year: movie.releasedAt ? new Date(movie.releasedAt).getFullYear().toString() : "",
-            cover: movie.imageUrl || null,
-          }));
-          setMovies(mappedMovies);
+          setMovies(response.data);
         } else {
           setMovies([]);
         }
@@ -75,13 +68,7 @@ function SearchPage() {
                 {movies.length > 0 ? (
                   <div className="flex flex-wrap gap-6 justify-center">
                     {movies.map((movie) => (
-                      <MovieCard
-                        key={movie.id}
-                        id={movie.id}
-                        title={movie.title}
-                        year={movie.year}
-                        cover={movie.cover}
-                      />
+                      <MovieCard key={movie.id} movie={movie} />
                     ))}
                   </div>
                 ) : query ? (
@@ -108,4 +95,3 @@ function SearchPage() {
 }
 
 export default SearchPage;
-
