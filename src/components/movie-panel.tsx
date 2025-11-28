@@ -9,44 +9,68 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { Button } from "./button";
-import { addFavorite } from "../api/cinelist";
+import { addFavorite, addToWatch } from "../api/cinelist";
 import { useUserStore } from "../stores/user-store";
 import type { Movie } from "../api/cinelist";
 
 interface MoviePanelProps {
   movie: Movie;
+  onToWatchChange?: () => void;
   onFavoriteChange?: () => void;
 }
 
-export function MoviePanel({ movie, onFavoriteChange }: MoviePanelProps) {
+export function MoviePanel({
+  movie,
+  onToWatchChange,
+  onFavoriteChange,
+}: MoviePanelProps) {
   const [imageError, setImageError] = useState(false);
+  const [toWatchLoading, setToWatchLoading] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const toWatch = useUserStore((state) => state.toWatch);
   const favorites = useUserStore((state) => state.favorites);
   const fetchUser = useUserStore((state) => state.fetchUser);
-  const user = useUserStore((state) => state.user);
-  
-  // Verifica se o filme está nos favoritos (comparação de strings)
-  const isFavorite = favorites.some((fav) => String(fav.id) === String(movie.id));
 
-  // Garante que os favoritos sejam carregados quando o componente montar
+  const isToWatch = toWatch.some(
+    (toWatch) => String(toWatch.id) === String(movie.id),
+  );
+
+  const isFavorite = favorites.some(
+    (fav) => String(fav.id) === String(movie.id),
+  );
+
   useEffect(() => {
-    if (user && favorites.length === 0) {
+    if (favorites.length === 0 || toWatch.length === 0) {
       fetchUser();
     }
-  }, [user, favorites.length, fetchUser]);
+  }, [favorites.length, toWatch.length, fetchUser]);
 
   const navigate = useNavigate();
 
-  const genres = ["Ficção Científica", "Aventura", "Drama"];
-  const year = movie.releasedAt ? new Date(movie.releasedAt).getFullYear() : "----";
+  const year = movie.releasedAt
+    ? new Date(movie.releasedAt).getFullYear()
+    : "----";
+
+  const handleToWatch = async () => {
+    setToWatchLoading(true);
+    try {
+      await addToWatch({ movieId: movie.id });
+      await fetchUser();
+      if (onToWatchChange) {
+        onToWatchChange();
+      }
+    } catch (error) {
+      console.error("Erro ao adicionar filme em watchlist:", error);
+    } finally {
+      setToWatchLoading(false);
+    }
+  };
 
   const handleFavorite = async () => {
     setFavoriteLoading(true);
     try {
       await addFavorite({ movieId: movie.id });
-      // Recarrega os dados do usuário para atualizar a lista de favoritos
       await fetchUser();
-      // Chama callback se fornecido
       if (onFavoriteChange) {
         onFavoriteChange();
       }
@@ -99,7 +123,7 @@ export function MoviePanel({ movie, onFavoriteChange }: MoviePanelProps) {
         </div>
 
         <div className="flex flex-col justify-end text-white flex-1">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">{movie.title}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{movie.title}</h1>
 
           <div className="flex items-center gap-4 text-zinc-400 text-sm mb-4">
             <span className="flex items-center gap-1">
@@ -108,17 +132,6 @@ export function MoviePanel({ movie, onFavoriteChange }: MoviePanelProps) {
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" /> 155 min
             </span>
-          </div>
-
-          <div className="flex gap-2 mb-6">
-            {genres.map((genre) => (
-              <span
-                key={genre}
-                className="px-3 py-1 rounded-full bg-blue-600/20 text-blue-400 text-xs font-medium border border-blue-600/30"
-              >
-                {genre}
-              </span>
-            ))}
           </div>
 
           <div className="mb-6">
@@ -143,10 +156,16 @@ export function MoviePanel({ movie, onFavoriteChange }: MoviePanelProps) {
 
             <div className="flex gap-3">
               <Button
-                variant="primary"
-                className="rounded-full w-12 h-12 p-0 flex items-center justify-center"
+                variant={isToWatch ? "primary" : "secondary"}
+                className={`rounded-full w-12 h-12 p-0 flex items-center justify-center ${
+                  isToWatch ? "" : "border-zinc-600"
+                }`}
+                onClick={handleToWatch}
+                disabled={toWatchLoading}
               >
-                <ListPlus className="w-5 h-5" />
+                <ListPlus
+                  className={`w-5 h-5 ${isToWatch ? "fill-current" : ""}`}
+                />
               </Button>
               <Button
                 variant={isFavorite ? "primary" : "secondary"}
@@ -156,8 +175,8 @@ export function MoviePanel({ movie, onFavoriteChange }: MoviePanelProps) {
                 onClick={handleFavorite}
                 disabled={favoriteLoading}
               >
-                <Heart 
-                  className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} 
+                <Heart
+                  className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
                 />
               </Button>
             </div>

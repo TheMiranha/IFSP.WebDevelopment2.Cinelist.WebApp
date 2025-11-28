@@ -42,28 +42,6 @@ function UserScreen() {
     fetchUserData();
   }, [user, id]);
 
-
-  const userReviews = [
-    {
-      id: 1,
-      movieTitle: "Duna: Parte 2",
-      movieCover:
-        "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
-      rating: 5,
-      text: "Simplesmente espetacular. A fotografia e o design de som são de outro mundo. Villeneuve se superou.",
-      date: "Há 2 dias",
-    },
-    {
-      id: 2,
-      movieTitle: "Barbie",
-      movieCover:
-        "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg",
-      rating: 4,
-      text: "Muito mais profundo do que eu esperava. Ótima crítica social com humor.",
-      date: "Há 1 mês",
-    },
-  ];
-
   const renderContent = () => {
     if (activeTab === "reviews") {
       // Para reviews, precisamos extrair os dados dos ratings watched
@@ -93,12 +71,6 @@ function UserScreen() {
 
     let currentMovies: Movie[] = [];
     switch (activeTab) {
-      case "watched":
-        // Extrai os filmes dos ratings watched (se o rating tiver informações do filme)
-        currentMovies = watched
-          .map((rating) => rating.movie)
-          .filter((movie): movie is Movie => movie !== undefined);
-        break;
       case "watchlist":
         currentMovies = toWatch;
         break;
@@ -158,17 +130,6 @@ function UserScreen() {
             </div>
 
             <div className="flex items-center justify-center gap-8 border-b border-zinc-800 mb-8 overflow-x-auto">
-              <button
-                onClick={() => setActiveTab("watched")}
-                className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
-                  activeTab === "watched"
-                    ? "border-blue-600 text-blue-500"
-                    : "border-transparent text-zinc-400 hover:text-white"
-                }`}
-              >
-                Assistidos
-              </button>
-
               <button
                 onClick={() => setActiveTab("watchlist")}
                 className={`pb-3 text-sm font-medium transition-colors border-b-2 ${

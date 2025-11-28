@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { me, type Movie } from '../api/cinelist';
+import { create } from "zustand";
+import { me, type Movie } from "../api/cinelist";
 
 type User = {
   id: string;
@@ -13,6 +13,7 @@ type User = {
 type UserStore = {
   user: User | null;
   favorites: Movie[];
+  toWatch: Movie[];
   loading: boolean;
   error: string | null;
   fetchUser: () => Promise<void>;
@@ -23,13 +24,14 @@ type UserStore = {
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
   favorites: [],
+  toWatch: [],
   loading: false,
   error: null,
-  
+
   fetchUser: async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      set({ user: null, favorites: [], loading: false });
+      set({ user: null, favorites: [], toWatch: [], loading: false });
       return;
     }
 
@@ -37,27 +39,39 @@ export const useUserStore = create<UserStore>((set) => ({
     try {
       const response = await me();
       if (response.success && response.data) {
-        set({ 
-          user: response.data.user, 
+        set({
+          user: response.data.user,
           favorites: response.data.favorites || [],
-          loading: false, 
-          error: null 
+          toWatch: response.data.toWatch || [],
+          loading: false,
+          error: null,
         });
       } else {
-        set({ user: null, favorites: [], loading: false, error: "Erro ao buscar dados do usuário" });
+        set({
+          user: null,
+          favorites: [],
+          toWatch: [],
+          loading: false,
+          error: "Erro ao buscar dados do usuário",
+        });
       }
     } catch (error: any) {
       // Se der erro (token inválido, etc), limpa o token e o usuário
-      localStorage.removeItem('token');
-      set({ user: null, favorites: [], loading: false, error: error.message });
+      localStorage.removeItem("token");
+      set({
+        user: null,
+        favorites: [],
+        toWatch: [],
+        loading: false,
+        error: error.message,
+      });
     }
   },
-  
+
   setUser: (user) => set({ user }),
-  
+
   logout: () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     set({ user: null, favorites: [], error: null });
   },
 }));
-

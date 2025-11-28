@@ -23,7 +23,7 @@ export function HighLightMovie({ movie }: HighLightMovieProps) {
   };
 
   return (
-    <div className="relative w-full h-[32rem] overflow-hidden">
+    <div className="relative w-full h-[32rem] overflow-hidden bg-zinc-950">
       <div className="absolute inset-0">
         <img
           src={
@@ -31,29 +31,40 @@ export function HighLightMovie({ movie }: HighLightMovieProps) {
               ? `${movie.imageUrl}&w=2525&auto=format&fit=crop`
               : undefined
           }
-          alt={`Destaque: ${movie.title}`}
-          className="w-full h-full object-cover"
+          alt="Background Blur"
+          className="w-full h-full object-cover blur-3xl opacity-40 scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/30 to-transparent" />
       </div>
 
-      <div className="relative z-10 h-full max-w-7xl mx-auto px-6 pb-12 flex flex-col justify-end items-start">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-          {movie.title}
-        </h1>
+      <div className="relative z-10 h-full max-w-7xl mx-auto px-6 flex items-center gap-12">
+        <div className="flex-1 flex flex-col justify-center items-start pt-12 md:pt-0">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-tight leading-tight">
+            {movie.title}
+          </h1>
 
-        <p className="text-zinc-300 text-lg mb-8 max-w-2xl line-clamp-3">
-          {movie.description}
-        </p>
+          <p className="text-zinc-300 text-lg mb-8 max-w-xl line-clamp-3 md:line-clamp-4">
+            {movie.description}
+          </p>
 
-        <Button
-          variant="primary"
-          className="flex items-center gap-2 px-6 py-3"
-          onClick={handleClick}
-        >
-          <Play className="w-4 h-4 fill-current" />
-          Ver Detalhes
-        </Button>
+          <Button
+            variant="primary"
+            className="flex items-center gap-2 px-8 py-6 text-lg"
+            onClick={handleClick}
+          >
+            <Play className="w-5 h-5 fill-current" />
+            Ver Detalhes
+          </Button>
+        </div>
+
+        <div className="hidden md:block flex-shrink-0 relative group perspective-1000">
+          <img
+            src={movie.imageUrl}
+            alt={`Poster ${movie.title}`}
+            className="w-[300px] h-[450px] object-cover rounded-xl shadow-2xl shadow-black/80 ring-1 ring-white/10 transform transition-transform duration-500 hover:scale-105"
+          />
+        </div>
       </div>
     </div>
   );

@@ -3,28 +3,9 @@ import { Star } from "lucide-react";
 export function UserReviewItem({ review }) {
   return (
     <div className="bg-zinc-900 rounded-xl p-6 border border-zinc-800 flex gap-4 hover:border-zinc-700 transition-colors">
-      <div className="flex-shrink-0 w-16 h-24">
-        {review.movieCover ? (
-          <img
-            src={review.movieCover}
-            alt={review.movieTitle}
-            className="w-full h-full object-cover rounded-md border border-zinc-700"
-          />
-        ) : (
-          <div className="w-full h-full bg-zinc-800 rounded-md border border-zinc-700 flex items-center justify-center">
-            <span className="text-zinc-500 text-xs text-center px-1">
-              {review.movieTitle}
-            </span>
-          </div>
-        )}
-      </div>
-
       <div className="flex-1">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h4 className="font-bold text-white text-sm">
-              {review.movieTitle}
-            </h4>
             <div className="flex items-center gap-1">
               <Star className="w-3 h-3 text-yellow-500 fill-current" />
               <span className="text-xs text-zinc-400">
@@ -32,7 +13,9 @@ export function UserReviewItem({ review }) {
               </span>
             </div>
           </div>
-          <span className="text-xs text-zinc-500">{review.date}</span>
+          <span className="text-xs text-zinc-500">
+            {new Date(review.date).toLocaleDateString("pt-BR")}
+          </span>
         </div>
 
         <p className="text-zinc-300 text-sm leading-relaxed line-clamp-3">

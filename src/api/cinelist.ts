@@ -60,7 +60,7 @@ export type MeResponse = {
     favorites: Movie[];
     toWatch: Movie[];
     watched: Rating[];
-  }
+  };
 };
 export async function me(): Promise<MeResponse> {
   const response = await api.get<MeResponse>("/user/me");
@@ -133,8 +133,8 @@ export type GetMovieResponse = {
     movie: Movie;
     cast: Cast[];
     ratings: Rating[];
-  }
-}
+  };
+};
 export async function getMovie(id: string): Promise<GetMovieResponse> {
   const response = await api.get<GetMovieResponse>("/movies/by-id/" + id);
   return response.data;
@@ -154,14 +154,22 @@ type CreateRatingResponse = {
 export async function createRating(
   props: CreateRatingProps,
 ): Promise<CreateRatingResponse> {
-  const response = await api.post<CreateRatingResponse>("/movies/watched", props);
+  const response = await api.post<CreateRatingResponse>(
+    "/movies/watched",
+    props,
+  );
   return response.data;
 }
 
-type AddFavoriteProps = {
-  movieId: string
+type AddMovieProps = {
+  movieId: string;
 };
-export async function addFavorite(props: AddFavoriteProps): Promise<void> {
+export async function addFavorite(props: AddMovieProps): Promise<void> {
   const response = await api.post<void>("/movies/favorite", props);
+  return response.data;
+}
+
+export async function addToWatch(props: AddMovieProps): Promise<void> {
+  const response = await api.post<void>("/movies/to-watch", props);
   return response.data;
 }
