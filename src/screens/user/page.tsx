@@ -43,32 +43,6 @@ function UserScreen() {
   }, [user, id]);
 
   const renderContent = () => {
-    if (activeTab === "reviews") {
-      // Para reviews, precisamos extrair os dados dos ratings watched
-      const reviews = watched.map((rating, index) => ({
-        id: index,
-        movieTitle: rating.movie?.title || "Filme",
-        movieCover: rating.movie?.imageUrl || null,
-        rating: rating.rate,
-        text: rating.description,
-        date: rating.createdAt,
-      }));
-
-      return (
-        <div className="space-y-4 max-w-4xl mx-auto">
-          {reviews.length > 0 ? (
-            reviews.map((review) => (
-              <UserReviewItem key={review.id} review={review} />
-            ))
-          ) : (
-            <p className="text-zinc-500 text-sm mt-4 text-center">
-              Nenhuma resenha encontrada.
-            </p>
-          )}
-        </div>
-      );
-    }
-
     let currentMovies: Movie[] = [];
     switch (activeTab) {
       case "watchlist":
@@ -150,17 +124,6 @@ function UserScreen() {
                 }`}
               >
                 Favoritos
-              </button>
-
-              <button
-                onClick={() => setActiveTab("reviews")}
-                className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
-                  activeTab === "reviews"
-                    ? "border-blue-600 text-blue-500"
-                    : "border-transparent text-zinc-400 hover:text-white"
-                }`}
-              >
-                Resenhas
               </button>
             </div>
 
